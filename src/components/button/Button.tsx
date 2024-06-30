@@ -10,7 +10,7 @@ export const Button = ({
 	color,
 }: {
 	title: string;
-	onClick: (e: any) => void;
+	onClick?: () => void;
 	type?: React.ButtonHTMLAttributes<HTMLButtonElement>['type'];
 	className: string;
 	color?: 'white';
@@ -19,7 +19,7 @@ export const Button = ({
 		<button
 			className={`${styles.button} ${styles[className]}`}
 			type={type}
-			onClick={(e: any) => onClick(e)}>
+			onClick={onClick}>
 			<Text color={color} weight={800} uppercase>
 				{title}
 			</Text>

@@ -3,8 +3,9 @@ import { Button } from 'components/button';
 
 import styles from './ArticleParamsForm.module.scss';
 import { Select } from '../select';
-import { useState } from 'react';
+import { useState, createRef, FormEvent, MouseEvent } from 'react';
 import {
+	ArticleStateType,
 	backgroundColors,
 	contentWidthArr,
 	defaultArticleState,
@@ -17,11 +18,8 @@ import { Text } from 'components/text';
 import { Separator } from 'components/separator';
 
 export const ArticleParamsForm = (props: {
-	refForm: any;
-	localStorageOptions: any;
-	formIsOpen: boolean;
-	setIsOpen: (e: any) => void;
-	setOptions: (p: any) => void;
+	localStorageOptions: ArticleStateType;
+	setOptions: (p: ArticleStateType) => void;
 }) => {
 	const [selectedFontType, setSelectedFontType] = useState(
 		props.localStorageOptions.fontFamilyOption ||
@@ -41,6 +39,9 @@ export const ArticleParamsForm = (props: {
 	const [selectedContentWidth, setSelectedContentWidth] = useState(
 		props.localStorageOptions.contentWidth || defaultArticleState.contentWidth
 	);
+	const [formIsOpen, setIsOpen] = useState(false);
+
+	const refForm = createRef<HTMLFormElement>();
 	const options = {
 		fontFamilyOption: selectedFontType,
 		fontSizeOption: selectedFontSize,
@@ -48,8 +49,9 @@ export const ArticleParamsForm = (props: {
 		backgroundColor: selectedContentColor,
 		contentWidth: selectedContentWidth,
 	};
-	const handleSubmit = (event: any) => {
-		event.preventDefault();
+
+	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
 		props.setOptions(options);
 		localStorage.setItem('options', JSON.stringify(options));
 	};
@@ -62,19 +64,24 @@ export const ArticleParamsForm = (props: {
 		localStorage.clear();
 		props.setOptions(defaultArticleState);
 	};
+	const handleSetIsOpen = (e: MouseEvent): void => {
+		if ((e.target as HTMLElement).closest('form') !== refForm.current)
+			formIsOpen
+				? setIsOpen(false)
+				: e.currentTarget.role === 'button'
+				? setIsOpen(true)
+				: '';
+	};
 	return (
 		<>
-			<ArrowButton
-				formIsOpen={props.formIsOpen}
-				onClick={(event: MouseEvent) => props.setIsOpen(event)}
-			/>
+			<ArrowButton formIsOpen={formIsOpen} onClick={handleSetIsOpen} />
 			<aside
 				className={
-					props.formIsOpen
+					formIsOpen
 						? `${styles.container_open} ${styles.container}`
 						: styles.container
 				}>
-				<form ref={props.refForm} className={styles.form}>
+				<form onSubmit={handleSubmit} ref={refForm} className={styles.form}>
 					<Text size={31} weight={800} uppercase>
 						{'Задайте параметры'}
 					</Text>
@@ -120,7 +127,6 @@ export const ArticleParamsForm = (props: {
 						/>
 						<Button
 							className={'buttonSubmit'}
-							onClick={handleSubmit}
 							title='Применить'
 							type='submit'
 						/>

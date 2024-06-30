@@ -3,7 +3,7 @@ import { Button } from 'components/button';
 
 import styles from './ArticleParamsForm.module.scss';
 import { Select } from '../select';
-import { useState, createRef, FormEvent, MouseEvent } from 'react';
+import { useState, FormEvent, useEffect, useRef } from 'react';
 import {
 	ArticleStateType,
 	backgroundColors,
@@ -41,7 +41,6 @@ export const ArticleParamsForm = (props: {
 	);
 	const [formIsOpen, setIsOpen] = useState(false);
 
-	const refForm = createRef<HTMLFormElement>();
 	const options = {
 		fontFamilyOption: selectedFontType,
 		fontSizeOption: selectedFontSize,
@@ -50,6 +49,7 @@ export const ArticleParamsForm = (props: {
 		contentWidth: selectedContentWidth,
 	};
 
+	const refForm = useRef<HTMLFormElement>(null);
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		props.setOptions(options);
@@ -64,24 +64,40 @@ export const ArticleParamsForm = (props: {
 		localStorage.clear();
 		props.setOptions(defaultArticleState);
 	};
-	const handleSetIsOpen = (e: MouseEvent): void => {
-		if ((e.target as HTMLElement).closest('form') !== refForm.current)
-			formIsOpen
-				? setIsOpen(false)
-				: e.currentTarget.role === 'button'
-				? setIsOpen(true)
-				: '';
+
+	const handleOpen = (): void => {
+		!formIsOpen && setIsOpen(true);
 	};
+
+	useEffect(() => {
+		if (formIsOpen) {
+			const handleClose = (e: MouseEvent) => {
+				if (
+					!refForm.current?.contains(e.target as HTMLElement) ||
+					(e.target as HTMLElement).parentElement?.role === 'button'
+				) {
+					setIsOpen(false);
+				}
+			};
+
+			document.addEventListener('mousedown', handleClose);
+
+			return () => {
+				document.removeEventListener('mousedown', handleClose);
+			};
+		}
+	}, [formIsOpen]);
+
 	return (
 		<>
-			<ArrowButton formIsOpen={formIsOpen} onClick={handleSetIsOpen} />
+			<ArrowButton formIsOpen={formIsOpen} onClick={handleOpen} />
 			<aside
 				className={
 					formIsOpen
 						? `${styles.container_open} ${styles.container}`
 						: styles.container
 				}>
-				<form onSubmit={handleSubmit} ref={refForm} className={styles.form}>
+				<form ref={refForm} onSubmit={handleSubmit} className={styles.form}>
 					<Text size={31} weight={800} uppercase>
 						{'Задайте параметры'}
 					</Text>

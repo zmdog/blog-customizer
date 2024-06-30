@@ -3,8 +3,7 @@ import arrow from 'src/images/arrow.svg';
 import styles from './ArrowButton.module.scss';
 
 /** Функция для обработки открытия/закрытия формы */
-import { MouseEvent } from 'react';
-export type OnClick = (e: MouseEvent) => void;
+export type OnClick = () => void;
 
 export const ArrowButton = (props: {
 	formIsOpen: boolean;
@@ -13,7 +12,7 @@ export const ArrowButton = (props: {
 	return (
 		/* Не забываем указаывать role и aria-label атрибуты для интерактивных элементов */
 		<div
-			onClick={(e: MouseEvent) => props.onClick(e)}
+			onClick={props.onClick}
 			role='button'
 			aria-label='Открыть/Закрыть форму параметров статьи'
 			tabIndex={0}

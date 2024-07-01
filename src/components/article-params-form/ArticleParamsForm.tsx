@@ -3,7 +3,8 @@ import { Button } from 'components/button';
 
 import styles from './ArticleParamsForm.module.scss';
 import { Select } from '../select';
-import React, { useState, FormEvent, useEffect, useRef } from 'react';
+import { useState, useRef, FormEvent, MouseEvent } from 'react';
+import { CloseForm } from 'src/hooks/closeForm';
 import {
 	ArticleStateType,
 	backgroundColors,
@@ -40,6 +41,7 @@ export const ArticleParamsForm = (props: {
 		props.localStorageOptions.contentWidth || defaultArticleState.contentWidth
 	);
 	const [formIsOpen, setIsOpen] = useState(false);
+	const refForm = useRef<HTMLFormElement>(null);
 
 	const options = {
 		fontFamilyOption: selectedFontType,
@@ -48,8 +50,6 @@ export const ArticleParamsForm = (props: {
 		backgroundColor: selectedContentColor,
 		contentWidth: selectedContentWidth,
 	};
-
-	const refForm = useRef<HTMLFormElement>(null);
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		props.setOptions(options);
@@ -65,26 +65,15 @@ export const ArticleParamsForm = (props: {
 		props.setOptions(defaultArticleState);
 	};
 
-	const handleToggle = (e: React.MouseEvent): void => {
+	const handleToggle = (e: MouseEvent): void => {
 		e.stopPropagation();
 		setIsOpen((formIsOpen) => !formIsOpen);
 	};
-
-	useEffect(() => {
-		if (formIsOpen) {
-			const handleClose = (e: MouseEvent) => {
-				if (!refForm.current?.contains(e.target as HTMLElement)) {
-					setIsOpen(false);
-				}
-			};
-
-			document.addEventListener('mousedown', handleClose);
-
-			return () => {
-				document.removeEventListener('mousedown', handleClose);
-			};
-		}
-	}, [formIsOpen]);
+	CloseForm({
+		refForm,
+		formIsOpen,
+		setIsOpen,
+	});
 
 	return (
 		<>

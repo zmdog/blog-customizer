@@ -3,7 +3,7 @@ import { Button } from 'components/button';
 
 import styles from './ArticleParamsForm.module.scss';
 import { Select } from '../select';
-import { useState, FormEvent, useEffect, useRef } from 'react';
+import React, { useState, FormEvent, useEffect, useRef } from 'react';
 import {
 	ArticleStateType,
 	backgroundColors,
@@ -65,17 +65,15 @@ export const ArticleParamsForm = (props: {
 		props.setOptions(defaultArticleState);
 	};
 
-	const handleOpen = (): void => {
-		!formIsOpen && setIsOpen(true);
+	const handleToggle = (e: React.MouseEvent): void => {
+		e.stopPropagation();
+		setIsOpen((formIsOpen) => !formIsOpen);
 	};
 
 	useEffect(() => {
 		if (formIsOpen) {
 			const handleClose = (e: MouseEvent) => {
-				if (
-					!refForm.current?.contains(e.target as HTMLElement) ||
-					(e.target as HTMLElement).parentElement?.role === 'button'
-				) {
+				if (!refForm.current?.contains(e.target as HTMLElement)) {
 					setIsOpen(false);
 				}
 			};
@@ -90,7 +88,7 @@ export const ArticleParamsForm = (props: {
 
 	return (
 		<>
-			<ArrowButton formIsOpen={formIsOpen} onClick={handleOpen} />
+			<ArrowButton formIsOpen={formIsOpen} onClick={handleToggle} />
 			<aside
 				className={
 					formIsOpen

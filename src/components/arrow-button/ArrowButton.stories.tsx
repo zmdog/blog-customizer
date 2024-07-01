@@ -4,6 +4,10 @@ import { ArrowButton } from './ArrowButton';
 
 const meta: Meta<typeof ArrowButton> = {
 	component: ArrowButton,
+	args: {
+		onClick: () => console.log(1),
+		formIsOpen: false,
+	},
 };
 
 export default meta;
@@ -13,7 +17,7 @@ export const ArrowButtonStory: Story = {
 	render: () => {
 		return (
 			<>
-				<ArrowButton />
+				<ArrowButton onClick={() => console.log(1)} formIsOpen={false} />
 			</>
 		);
 	},

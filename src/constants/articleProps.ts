@@ -6,7 +6,10 @@ export const fontFamilyClasses = [
 	'merriweather',
 ] as const;
 
+export const fontFamilyColors = ['white'] as const;
+
 export type FontFamiliesClasses = (typeof fontFamilyClasses)[number];
+export type FontFamiliesColors = (typeof fontFamilyColors)[number];
 
 export type OptionType = {
 	title: string;

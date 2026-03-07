@@ -51,7 +51,14 @@ module.exports = {
 			{
 				test: /\.(sa|sc|c)ss$/,
 				use: [
-					production ? MiniCssExtractPlugin.loader : 'style-loader',
+					production
+						? {
+								loader: MiniCssExtractPlugin.loader,
+								options: {
+									publicPath: '../../',
+								},
+						  }
+						: 'style-loader',
 					{
 						loader: 'css-loader',
 						options: {
@@ -60,7 +67,7 @@ module.exports = {
 								localIdentName: '[name]__[local]__[hash:base64:5]',
 								auto: /\.module\.\w+$/i,
 							},
-							importLoaders: 2, //Значение 2 говорит о том, что некоторые трансформации PostCSS нужно применить до css-loader.
+							importLoaders: 2,
 						},
 					},
 					'postcss-loader',
